@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "278717481403",
+    "project_id": "appnupe",
+    "storage_bucket": "appnupe.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278717481403:android:3ea071b47ead797c58449e",
+        "android_client_info": {
+          "package_name": "com.Jordano.NuPe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6xhUpRUzRZgI9V4eF5Qe1wkG0So7hy5k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:278717481403:android:a8c024191026181b58449e",
+        "android_client_info": {
+          "package_name": "com.example.app_nupe"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6xhUpRUzRZgI9V4eF5Qe1wkG0So7hy5k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
