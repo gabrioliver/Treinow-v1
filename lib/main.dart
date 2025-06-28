@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
+import 'firebase_options.dart';
 import 'theme_controller.dart';
+
+// Telas
+import 'screens/splash/splash_screen.dart' as splash;
 import 'screens/login/login_screen.dart';
 import 'screens/login/register_screen.dart';
 import 'screens/login/recover_login_screen.dart';
-import 'screens/painel_profissional/painel_profissional_screen.dart';
+import 'screens/painel_profissional/painel_profissional_screen.dart' as painel;
+import 'screens/alunos/meus_alunos_screen.dart';
+import 'screens/alunos/detalhes_aluno_screen.dart';
+import 'screens/financeiro/financeiro_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -89,12 +95,24 @@ class TreiNowApp extends StatelessWidget {
         ),
         textTheme: const TextTheme(bodyMedium: TextStyle(color: Colors.white)),
       ),
-      initialRoute: '/',
+      initialRoute: '/splash',
       routes: {
+        '/splash': (context) => const splash.SplashScreen(),
         '/': (context) => const LoginScreen(),
         '/register': (context) => const RegisterScreen(),
         '/recover': (context) => const RecoverLoginScreen(),
-        '/painel': (context) => const PainelProfissionalScreen(),
+        '/painel': (context) => const painel.PainelProfissionalScreen(),
+        '/alunos': (context) => const MeusAlunosScreen(),
+        '/financeiro': (context) => const FinanceiroScreen(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/detalhes_aluno') {
+          final Map<String, dynamic> aluno = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => DetalhesAlunoScreen(aluno: aluno),
+          );
+        }
+        return null;
       },
     );
   }

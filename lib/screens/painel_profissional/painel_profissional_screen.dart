@@ -12,14 +12,14 @@ class PainelProfissionalScreen extends StatefulWidget {
 class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
   bool isDarkMode = false;
 
+  final List<Map<String, String>> notificacoes = [
+    {"usuario": "João", "mensagem": "Faltou na aula", "hora": "08:30"},
+    {"usuario": "Maria", "mensagem": "Enviou comprovante", "hora": "09:15"},
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final String nomeProfissional = "Karlla"; // puxar do Firebase depois
-
-    final List<Map<String, String>> notificacoes = [
-      {"usuario": "João", "mensagem": "Faltou na aula", "hora": "08:30"},
-      {"usuario": "Maria", "mensagem": "Enviou comprovante", "hora": "09:15"},
-    ];
+    final String nomeProfissional = "Karlla";
 
     return Scaffold(
       drawer: Drawer(
@@ -38,7 +38,6 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
                 setState(() {
                   isDarkMode = value;
                 });
-                // Atualiza o tema no MaterialApp (reconstrução via restart ou provider)
                 final mode = value ? ThemeMode.dark : ThemeMode.light;
                 MyAppThemeController.of(context)?.setThemeMode(mode);
               },
@@ -67,76 +66,98 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
           )
         ],
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               nomeProfissional,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF0077B6),
+              ),
             ),
             const SizedBox(height: 20),
 
             Wrap(
-              spacing: 10,
-              runSpacing: 10,
+              spacing: 12,
+              runSpacing: 12,
               children: [
-                _dashboardCard("Meus alunos", Icons.group),
-                _dashboardCard("Financeiro", Icons.attach_money),
-                _dashboardCard("Agenda", Icons.calendar_today),
-                _dashboardCard("Dietas", Icons.food_bank_rounded),
-                _dashboardCard("Treinos", Icons.fitness_center),
-                _dashboardCard("Avaliações Fisio", Icons.show_chart),
-                _dashboardCard("Meus anúncios", Icons.campaign),
-                _dashboardCard("Notificações", Icons.notifications),
-                _dashboardCard("Relatórios", Icons.bar_chart),
+                _dashboardCard("Meus alunos", Icons.group, route: '/alunos'),
+                _dashboardCard("Financeiro", Icons.attach_money, route: '/financeiro'),
+                _dashboardCard("Agenda", Icons.calendar_today, onTap: () => _showSnack("Agenda em breve")),
+                _dashboardCard("Dietas", Icons.food_bank_rounded, onTap: () => _showSnack("Dietas em breve")),
+                _dashboardCard("Treinos", Icons.fitness_center, onTap: () => _showSnack("Treinos em breve")),
+                _dashboardCard("Avaliações Fisio", Icons.show_chart, onTap: () => _showSnack("Avaliações em breve")),
+                _dashboardCard("Meus anúncios", Icons.campaign, onTap: () => _showSnack("Anúncios em breve")),
+                _dashboardCard("Notificações", Icons.notifications, onTap: () => _showSnack("Notificações em breve")),
+                _dashboardCard("Relatórios", Icons.bar_chart, onTap: () => _showSnack("Relatórios em breve")),
               ],
             ),
 
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
             const Text("Notificações", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
-            Expanded(
-              child: notificacoes.isEmpty
-                  ? const Center(child: Text("Você não possui notificações."))
-                  : ListView.builder(
-                      itemCount: notificacoes.length,
-                      itemBuilder: (context, index) {
-                        final noti = notificacoes[index];
-                        return ListTile(
-                          leading: const Icon(Icons.notifications),
-                          title: Text(noti['mensagem']!),
-                          subtitle: Text("Usuário: ${noti['usuario']} - Horário: ${noti['hora']}"),
-                        );
-                      },
-                    ),
-            ),
+            ...notificacoes.map((noti) => Card(
+              elevation: 4,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              margin: const EdgeInsets.symmetric(vertical: 6),
+              child: ListTile(
+                leading: const Icon(Icons.notifications, color: Colors.grey),
+                title: Text(noti['mensagem'] ?? ""),
+                subtitle: Text("Usuário: ${noti['usuario']} - Horário: ${noti['hora']}"),
+              ),
+            )).toList()
           ],
         ),
       ),
     );
   }
 
-  Widget _dashboardCard(String title, IconData icon) {
-    return GestureDetector(
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Widget _dashboardCard(String title, IconData icon, {String? route, VoidCallback? onTap}) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(20),
       onTap: () {
-        // ação ao clicar
+        if (route != null) {
+          Navigator.pushNamed(context, route);
+        } else if (onTap != null) {
+          onTap();
+        }
       },
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Container(
-          width: 100,
-          height: 100,
-          padding: const EdgeInsets.all(10),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: 32),
-              const SizedBox(height: 8),
-              Text(title, textAlign: TextAlign.center),
-            ],
-          ),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        width: 110,
+        height: 110,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE1F5FE),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+              offset: const Offset(2, 2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 34, color: const Color(0xFF0077B6)),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0077B6)),
+            ),
+          ],
         ),
       ),
     );
