@@ -13,6 +13,7 @@ import 'screens/painel_profissional/painel_profissional_screen.dart' as painel;
 import 'screens/alunos/meus_alunos_screen.dart';
 import 'screens/alunos/detalhes_aluno_screen.dart';
 import 'screens/financeiro/financeiro_screen.dart';
+import 'screens/financeiro/recibo_completo_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -104,6 +105,7 @@ class TreiNowApp extends StatelessWidget {
         '/painel': (context) => const painel.PainelProfissionalScreen(),
         '/alunos': (context) => const MeusAlunosScreen(),
         '/financeiro': (context) => const FinanceiroScreen(),
+        '/recibo_completo': (context) => const ReciboCompletoScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/detalhes_aluno') {
