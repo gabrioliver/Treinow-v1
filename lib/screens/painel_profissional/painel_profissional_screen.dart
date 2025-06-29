@@ -87,8 +87,8 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
               children: [
                 _dashboardCard("Meus alunos", Icons.group, route: '/alunos'),
                 _dashboardCard("Financeiro", Icons.attach_money, route: '/financeiro'),
-                _dashboardCard("Agenda", Icons.calendar_today, onTap: () => _showSnack("Agenda em breve")),
-                _dashboardCard("Dietas", Icons.food_bank_rounded, onTap: () => _showSnack("Dietas em breve")),
+                _dashboardCard("Agenda", Icons.calendar_today, route: '/agenda'),
+                _dashboardCard("Dietas", Icons.food_bank_rounded, route: '/dieta'),
                 _dashboardCard("Treinos", Icons.fitness_center, onTap: () => _showSnack("Treinos em breve")),
                 _dashboardCard("Avaliações Fisio", Icons.show_chart, onTap: () => _showSnack("Avaliações em breve")),
                 _dashboardCard("Meus anúncios", Icons.campaign, onTap: () => _showSnack("Anúncios em breve")),

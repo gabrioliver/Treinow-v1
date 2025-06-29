@@ -14,6 +14,9 @@ import 'screens/alunos/meus_alunos_screen.dart';
 import 'screens/alunos/detalhes_aluno_screen.dart';
 import 'screens/financeiro/financeiro_screen.dart';
 import 'screens/financeiro/recibo_completo_screen.dart';
+import 'screens/agenda/agenda_calendar_screen.dart';
+import 'screens/agenda/add_event_screen.dart';
+import 'screens/dieta/dieta_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -106,12 +109,20 @@ class TreiNowApp extends StatelessWidget {
         '/alunos': (context) => const MeusAlunosScreen(),
         '/financeiro': (context) => const FinanceiroScreen(),
         '/recibo_completo': (context) => const ReciboCompletoScreen(),
+        '/agenda': (context) => const AgendaCalendarScreen(),
+        '/dieta': (context) => const DietaScreen(),
       },
+      // Correção: adicionar AddEventScreen via onGenerateRoute
       onGenerateRoute: (settings) {
         if (settings.name == '/detalhes_aluno') {
           final Map<String, dynamic> aluno = settings.arguments as Map<String, dynamic>;
           return MaterialPageRoute(
             builder: (context) => DetalhesAlunoScreen(aluno: aluno),
+          );
+        } else if (settings.name == '/add_event') {
+          final DateTime selectedDate = settings.arguments as DateTime;
+          return MaterialPageRoute(
+            builder: (context) => AddEventScreen(selectedDate: selectedDate),
           );
         }
         return null;
