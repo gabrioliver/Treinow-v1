@@ -1,46 +1,76 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:app_nupe/theme_controller.dart';
-import 'package:app_nupe/screens/painel_profissional/editar_perfil_profissional_screen.dart';
 
-class PainelProfissionalScreen extends StatefulWidget {
-  const PainelProfissionalScreen({super.key});
+class PainelAlunoScreen extends StatefulWidget {
+  const PainelAlunoScreen({Key? key}) : super(key: key);
 
   @override
-  State<PainelProfissionalScreen> createState() => _PainelProfissionalScreenState();
+  State<PainelAlunoScreen> createState() => _PainelAlunoScreenState();
 }
 
-class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
+class _PainelAlunoScreenState extends State<PainelAlunoScreen> {
+  String nomeAluno = '';
+  bool carregando = true;
   bool isDarkMode = false;
 
   final List<Map<String, String>> notificacoes = [
-    {"usuario": "João", "mensagem": "Faltou na aula", "hora": "08:30"},
-    {"usuario": "Maria", "mensagem": "Enviou comprovante", "hora": "09:15"},
+    {"mensagem": "Seu treino foi atualizado", "hora": "10:00"},
+    {"mensagem": "Nova dieta disponível", "hora": "09:15"},
   ];
 
   @override
+  void initState() {
+    super.initState();
+    carregarNomeAluno();
+  }
+
+  Future<void> carregarNomeAluno() async {
+    try {
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        final doc = await FirebaseFirestore.instance.collection('usuarios').doc(uid).get();
+        setState(() {
+          nomeAluno = doc['nome'] ?? 'Aluno';
+          carregando = false;
+        });
+      }
+    } catch (e) {
+      print('Erro ao buscar nome do aluno: $e');
+      setState(() {
+        nomeAluno = 'Aluno';
+        carregando = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final String nomeProfissional = "Karlla";
+    if (carregando) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       drawer: Drawer(
         child: ListView(
           children: [
-            const DrawerHeader(child: Text("Menu do Professor")),
+            const DrawerHeader(child: Text("Menu do Aluno")),
             ListTile(
               leading: const Icon(Icons.person),
               title: const Text("Perfil"),
-              onTap: () async {
-                final uid = FirebaseAuth.instance.currentUser?.uid;
-                if (uid != null) {
-                  Navigator.pop(context); // Fecha o Drawer
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => EditarPerfilProfissionalScreen(uidProfissional: uid),
-                    ),
-                  );
-                }
+              onTap: () {
+                // TODO: Tela de perfil
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.search),
+              title: const Text("Buscar Profissional"),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.pushNamed(context, '/buscar_profissional');
               },
             ),
             SwitchListTile(
@@ -50,8 +80,8 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
                 setState(() {
                   isDarkMode = value;
                 });
-                final mode = value ? ThemeMode.dark : ThemeMode.light;
-                MyAppThemeController.of(context)?.setThemeMode(mode);
+                final modo = value ? ThemeMode.dark : ThemeMode.light;
+                MyAppThemeController.of(context)?.setThemeMode(modo);
               },
             ),
             ListTile(
@@ -84,7 +114,7 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              nomeProfissional,
+              nomeAluno,
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -92,26 +122,27 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
               ),
             ),
             const SizedBox(height: 20),
+
             Wrap(
               spacing: 12,
               runSpacing: 12,
               children: [
-                _dashboardCard("Meus alunos", Icons.group, route: '/alunos'),
-                _dashboardCard("Financeiro", Icons.attach_money, route: '/financeiro'),
-                _dashboardCard("Agenda", Icons.calendar_today, route: '/agenda'),
-                _dashboardCard("Dietas", Icons.food_bank_rounded, route: '/dieta'),
-                _dashboardCard("Treinos", Icons.fitness_center, onTap: () => _showSnack("Treinos em breve")),
-                _dashboardCard("Avaliações Fisio", Icons.show_chart, onTap: () => _showSnack("Avaliações em breve")),
-                _dashboardCard("Meus anúncios", Icons.campaign, onTap: () {
-                  Navigator.pushNamed(context, '/aviso');
-                }),
-                _dashboardCard("Notificações", Icons.notifications, onTap: () => _showSnack("Notificações em breve")),
-                _dashboardCard("Relatórios", Icons.bar_chart, onTap: () => _showSnack("Relatórios em breve")),
+                _dashboardCard("Treinos", Icons.fitness_center),
+                _dashboardCard("Dietas", Icons.restaurant),
+                _dashboardCard("Fisioterapia", Icons.accessibility_new),
+                _dashboardCard("Visão Geral do Objetivo", Icons.fire_extinguisher), // NOVO
+                _dashboardCard("Avaliações", Icons.folder_shared),// NOVO
+                _dashboardCard("Agenda", Icons.calendar_today),
+                _dashboardCard("Mensagens", Icons.message),
+                _dashboardCard("Notificações", Icons.notifications),
               ],
             ),
+
+
             const SizedBox(height: 30),
             const Text("Notificações", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 10),
+
             ...notificacoes.map((noti) => Card(
               elevation: 4,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -119,7 +150,7 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
               child: ListTile(
                 leading: const Icon(Icons.notifications, color: Colors.grey),
                 title: Text(noti['mensagem'] ?? ""),
-                subtitle: Text("Usuário: ${noti['usuario']} - Horário: ${noti['hora']}"),
+                subtitle: Text("Horário: ${noti['hora']}"),
               ),
             )),
           ],
@@ -128,20 +159,10 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
     );
   }
 
-  void _showSnack(String msg) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
-  }
-
-  Widget _dashboardCard(String title, IconData icon, {String? route, VoidCallback? onTap}) {
+  Widget _dashboardCard(String title, IconData icon, {VoidCallback? onTap}) {
     return InkWell(
       borderRadius: BorderRadius.circular(20),
-      onTap: () {
-        if (route != null) {
-          Navigator.pushNamed(context, route);
-        } else if (onTap != null) {
-          onTap();
-        }
-      },
+      onTap: onTap ?? () => _showSnack("Em breve: $title"),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOut,
@@ -173,5 +194,9 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
         ),
       ),
     );
+  }
+
+  void _showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 }

@@ -17,7 +17,10 @@ import 'screens/financeiro/recibo_completo_screen.dart';
 import 'screens/agenda/agenda_calendar_screen.dart';
 import 'screens/agenda/add_event_screen.dart';
 import 'screens/dieta/dieta_screen.dart';
-import 'screens/aviso/aviso_screen.dart'; // ✅ Correto
+import 'screens/aviso/aviso_screen.dart';
+import 'screens/painel_aluno/painel_aluno_screen.dart';
+import 'screens/painel_aluno/buscar_profissional/buscar_profissional_screen.dart';
+import 'screens/painel_profissional/perfil_profissional_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -112,7 +115,9 @@ class TreiNowApp extends StatelessWidget {
         '/recibo_completo': (context) => const ReciboCompletoScreen(),
         '/agenda': (context) => const AgendaCalendarScreen(),
         '/dieta': (context) => const DietaScreen(),
-        '/aviso': (context) => const AvisosScreen(), // ✅ Corrigido
+        '/aviso': (context) => const AvisosScreen(),
+        '/painel_aluno': (context) => const PainelAlunoScreen(),
+        '/buscar_profissional': (context) => const BuscarProfissionalScreen(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/detalhes_aluno') {
@@ -124,6 +129,11 @@ class TreiNowApp extends StatelessWidget {
           final DateTime selectedDate = settings.arguments as DateTime;
           return MaterialPageRoute(
             builder: (context) => AddEventScreen(selectedDate: selectedDate),
+          );
+        } else if (settings.name == '/detalhes_profissional') {
+          final Map<String, dynamic> profissional = settings.arguments as Map<String, dynamic>;
+          return MaterialPageRoute(
+            builder: (context) => PerfilProfissionalScreen(uidProfissional: profissional['uid']),
           );
         }
         return null;

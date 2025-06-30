@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class MeusAlunosScreen extends StatelessWidget {
@@ -5,34 +7,44 @@ class MeusAlunosScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // A lista deve estar dentro do build ou ser passada por construtor (aqui simplificado)
-    final List<Map<String, dynamic>> alunos = [
-      {
-        "nome": "João Silva",
-        "idade": 28,
-        "ativo": true,
-      },
-      {
-        "nome": "Maria Oliveira",
-        "idade": 34,
-        "ativo": false,
-      },
-      {
-        "nome": "Pedro Lima",
-        "idade": 21,
-        "ativo": true,
-      },
-    ];
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) {
+      return const Scaffold(
+        body: Center(child: Text('Usuário não autenticado')),
+      );
+    }
+
+    final alunosRef = FirebaseFirestore.instance
+        .collection('alunos')
+        .where('uid_profissional', isEqualTo: uid)
+        .orderBy('dataCadastro', descending: true);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meus Alunos'),
       ),
-      body: ListView.builder(
-        itemCount: alunos.length,
-        itemBuilder: (context, index) {
-          final aluno = alunos[index];
-          return _buildAlunoCard(aluno, context);
+      body: StreamBuilder<QuerySnapshot>(
+        stream: alunosRef.snapshots(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            return const Center(child: Text('Nenhum aluno cadastrado.'));
+          }
+
+          final alunos = snapshot.data!.docs;
+
+          return ListView.builder(
+            itemCount: alunos.length,
+            itemBuilder: (context, index) {
+              final doc = alunos[index];
+              final aluno = doc.data() as Map<String, dynamic>;
+              return _buildAlunoCard(aluno, context);
+            },
+          );
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -54,10 +66,10 @@ class MeusAlunosScreen extends StatelessWidget {
       child: ListTile(
         leading: CircleAvatar(
           radius: 8,
-          backgroundColor: aluno["ativo"] ? Colors.green : Colors.red,
+          backgroundColor: Colors.blue,
         ),
-        title: Text(aluno["nome"]),
-        subtitle: Text("Idade: ${aluno["idade"]}"),
+        title: Text(aluno["nome"] ?? 'Sem nome'),
+        subtitle: Text("Idade: ${aluno["idade"] ?? '-'}"),
         trailing: Wrap(
           spacing: 8,
           children: [
