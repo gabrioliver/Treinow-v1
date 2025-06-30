@@ -17,6 +17,7 @@ import 'screens/financeiro/recibo_completo_screen.dart';
 import 'screens/agenda/agenda_calendar_screen.dart';
 import 'screens/agenda/add_event_screen.dart';
 import 'screens/dieta/dieta_screen.dart';
+import 'screens/aviso/aviso_screen.dart'; // ✅ Correto
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -111,8 +112,8 @@ class TreiNowApp extends StatelessWidget {
         '/recibo_completo': (context) => const ReciboCompletoScreen(),
         '/agenda': (context) => const AgendaCalendarScreen(),
         '/dieta': (context) => const DietaScreen(),
+        '/aviso': (context) => const AvisosScreen(), // ✅ Corrigido
       },
-      // Correção: adicionar AddEventScreen via onGenerateRoute
       onGenerateRoute: (settings) {
         if (settings.name == '/detalhes_aluno') {
           final Map<String, dynamic> aluno = settings.arguments as Map<String, dynamic>;

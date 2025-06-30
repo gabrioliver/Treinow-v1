@@ -16,9 +16,10 @@ dependencies:
   google_sign_in: ^6.2.2
   cupertino_icons: ^1.0.6
   fl_chart: ^0.64.0 
-  intl: ^0.18.1
+  intl: ^0.20.2
   table_calendar: ^3.0.9
   uuid: ^4.0.0
+  image_picker: ^1.0.4
   
 dev_dependencies:
   flutter_test:
@@ -28,14 +29,15 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/assets/logo.png
-    - lib/assets/cafe_manha.png
-    - lib/assets/lanche_manha.png
-    - lib/assets/almoco.png
-    - lib/assets/jantar.png
-    - lib/assets/ceia.png
-    - lib/assets/calorias.png
-    - lib/assets/proteina.png
-    - lib/assets/gordura.png
-    - lib/assets/carboidratos.png
-    - lib/assets/agua.png
+    - assets/logo.png
+    - assets/cafe_manha.png
+    - assets/lanche_manha.png
+    - assets/almoco.png
+    - assets/jantar.png
+    - assets/ceia.png
+    - assets/calorias.png
+    - assets/proteina.png
+    - assets/gordura.png
+    - assets/carboidratos.png
+    - assets/agua.png
+    - assets/lanche.png
