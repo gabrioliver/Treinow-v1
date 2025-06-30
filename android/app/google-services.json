@@ -1,45 +1,36 @@
 {
   "project_info": {
-    "project_number": "278717481403",
-    "project_id": "appnupe",
-    "storage_bucket": "appnupe.firebasestorage.app"
+    "project_number": "441212964869",
+    "project_id": "treinow-dfe44",
+    "storage_bucket": "treinow-dfe44.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:278717481403:android:3ea071b47ead797c58449e",
+        "mobilesdk_app_id": "1:441212964869:android:d77c3a592a92a0159ecc6c",
         "android_client_info": {
-          "package_name": "com.Jordano.NuPe"
+          "package_name": "com.fluxlab404.treinow"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "441212964869-vqp924ond08rmocbvngof9i22jcto483.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyA6xhUpRUzRZgI9V4eF5Qe1wkG0So7hy5k"
+          "current_key": "AIzaSyBBws3_N1EuQ9M7EtHFvmnh8eRNWuSLAqw"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:278717481403:android:a8c024191026181b58449e",
-        "android_client_info": {
-          "package_name": "com.example.app_nupe"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyA6xhUpRUzRZgI9V4eF5Qe1wkG0So7hy5k"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441212964869-vqp924ond08rmocbvngof9i22jcto483.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

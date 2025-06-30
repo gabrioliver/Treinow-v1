@@ -1,15 +1,12 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
+    id("com.google.gms.google-services") // Firebase
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.example.app_nupe"
+    namespace = "com.fluxlab404.treinow"
     compileSdk = flutter.compileSdkVersion
 
     ndkVersion = "27.0.12077973"
@@ -24,10 +21,8 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.app_nupe"
-
+        applicationId = "com.fluxlab404.treinow"
         minSdk = 23
-
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
@@ -36,6 +31,8 @@ android {
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("debug")
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }
