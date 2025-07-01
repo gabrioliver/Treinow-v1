@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -11,66 +12,70 @@ class RegisterScreen extends StatefulWidget {
 
 class _RegisterScreenState extends State<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
-  final nomeController = TextEditingController();
-  final emailController = TextEditingController();
-  final senhaController = TextEditingController();
-  final celularController = TextEditingController();
-  final crefitoController = TextEditingController();
-  final crefController = TextEditingController();
-  final crnController = TextEditingController();
-  final idadeController = TextEditingController();
-  final pesoController = TextEditingController();
-  final alturaController = TextEditingController();
 
-  String tipoUsuario = 'aluno';
+  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController senhaController = TextEditingController();
+  final TextEditingController celularController = TextEditingController();
+  DateTime? dataNascimento;
+  String? tipoContaSelecionado;
   bool carregando = false;
 
-  Future<void> registrar() async {
-    if (!_formKey.currentState!.validate()) return;
+  Future<void> _selecionarData() async {
+    final data = await showDatePicker(
+      context: context,
+      initialDate: DateTime(2000),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (data != null) {
+      setState(() {
+        dataNascimento = data;
+      });
+    }
+  }
+
+  int _calcularIdade(DateTime nascimento) {
+    final hoje = DateTime.now();
+    int idade = hoje.year - nascimento.year;
+    if (hoje.month < nascimento.month || (hoje.month == nascimento.month && hoje.day < nascimento.day)) {
+      idade--;
+    }
+    return idade;
+  }
+
+  Future<void> _registrar() async {
+    if (!_formKey.currentState!.validate() || dataNascimento == null) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Preencha todos os campos.")));
+      return;
+    }
 
     setState(() => carregando = true);
 
     try {
-      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final credenciais = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: emailController.text.trim(),
-        password: senhaController.text.trim(),
+        password: senhaController.text,
       );
 
-      final uid = cred.user!.uid;
+      final idade = _calcularIdade(dataNascimento!);
 
-      // Substitui vírgula por ponto onde necessário
-      String peso = pesoController.text.replaceAll(',', '.');
-      String altura = alturaController.text.replaceAll(',', '.');
-
-      final dadosUsuario = {
+      await FirebaseFirestore.instance.collection('usuarios').doc(credenciais.user!.uid).set({
         'nome': nomeController.text.trim(),
         'email': emailController.text.trim(),
         'celular': celularController.text.trim(),
-        'tipo': tipoUsuario,
-        if (tipoUsuario == 'fisioterapeuta')
-          'crefito': crefitoController.text.trim(),
-        if (tipoUsuario == 'personal')
-          'cref': crefController.text.trim(),
-        if (tipoUsuario == 'nutricionista')
-          'crn': crnController.text.trim(),
-        if (tipoUsuario == 'aluno') ...{
-          'idade': idadeController.text.trim(),
-          'peso': peso,
-          'altura': altura,
-        },
-      };
+        'dataNascimento': dataNascimento,
+        'idade': idade,
+        'tipo': tipoContaSelecionado?.toLowerCase(),
+        'uid': credenciais.user!.uid,
+      });
 
-      await FirebaseFirestore.instance
-          .collection('usuarios')
-          .doc(uid)
-          .set(dadosUsuario);
-
-      // ✅ Volta para tela de login após cadastro
-      Navigator.pushReplacementNamed(context, '/');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Conta criada com sucesso!")));
+        Navigator.pushReplacementNamed(context, '/check_perfil');
+      }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao cadastrar: ${e.message}')),
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Erro: ${e.message}')));
     } finally {
       setState(() => carregando = false);
     }
@@ -79,123 +84,108 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Criar conta')),
+      appBar: AppBar(title: const Text("Criar Conta")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
           key: _formKey,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButtonFormField<String>(
-                value: tipoUsuario,
-                decoration: const InputDecoration(labelText: 'Tipo de conta'),
-                items: const [
-                  DropdownMenuItem(value: 'personal', child: Text('Personal')),
-                  DropdownMenuItem(value: 'nutricionista', child: Text('Nutricionista')),
-                  DropdownMenuItem(value: 'fisioterapeuta', child: Text('Fisioterapeuta')),
-                  DropdownMenuItem(value: 'aluno', child: Text('Aluno')),
-                ],
-                onChanged: (value) {
-                  setState(() => tipoUsuario = value ?? 'aluno');
-                },
-              ),
-              const SizedBox(height: 10),
               TextFormField(
                 controller: nomeController,
                 decoration: const InputDecoration(labelText: 'Nome completo'),
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Informe seu nome' : null,
+                validator: (value) => value == null || value.isEmpty ? 'Informe seu nome' : null,
               ),
-              const SizedBox(height: 10),
               TextFormField(
                 controller: emailController,
-                keyboardType: TextInputType.emailAddress,
                 decoration: const InputDecoration(labelText: 'E-mail'),
-                validator: (value) => value == null || !value.contains('@')
-                    ? 'E-mail inválido'
-                    : null,
+                keyboardType: TextInputType.emailAddress,
+                validator: (value) => value == null || value.isEmpty ? 'Informe seu e-mail' : null,
               ),
-              const SizedBox(height: 10),
               TextFormField(
                 controller: senhaController,
-                obscureText: true,
                 decoration: const InputDecoration(labelText: 'Senha'),
-                validator: (value) => value == null || value.length < 6
-                    ? 'Senha deve ter pelo menos 6 caracteres'
-                    : null,
-                onFieldSubmitted: (_) => registrar(), // ✅ Enter envia
+                obscureText: true,
+                validator: (value) => value == null || value.length < 6 ? 'Senha muito curta' : null,
               ),
-              const SizedBox(height: 10),
               TextFormField(
                 controller: celularController,
-                keyboardType: TextInputType.phone,
                 decoration: const InputDecoration(labelText: 'Celular'),
-                validator: (value) =>
-                value == null || value.isEmpty ? 'Informe seu celular' : null,
+                keyboardType: TextInputType.phone,
               ),
-              if (tipoUsuario == 'fisioterapeuta') ...[
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: crefitoController,
-                  decoration: const InputDecoration(labelText: 'CREFITO'),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Informe o CREFITO' : null,
-                ),
-              ],
-              if (tipoUsuario == 'personal') ...[
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: crefController,
-                  decoration: const InputDecoration(labelText: 'CREF'),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Informe o CREF' : null,
-                ),
-              ],
-              if (tipoUsuario == 'nutricionista') ...[
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: crnController,
-                  decoration: const InputDecoration(labelText: 'CRN'),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Informe o CRN' : null,
-                ),
-              ],
-              if (tipoUsuario == 'aluno') ...[
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: idadeController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Idade'),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Informe a idade' : null,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: pesoController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Peso (kg)'),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Informe o peso' : null,
-                ),
-                const SizedBox(height: 10),
-                TextFormField(
-                  controller: alturaController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration: const InputDecoration(labelText: 'Altura (cm)'),
-                  validator: (value) =>
-                  value == null || value.isEmpty ? 'Informe a altura' : null,
-                ),
-              ],
-              const SizedBox(height: 20),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: registrar,
-                  child: carregando
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text('Criar conta'),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: tipoContaSelecionado,
+                hint: const Text("Selecione o tipo de conta"),
+                decoration: const InputDecoration(labelText: "Tipo de Conta"),
+                items: ['Aluno', 'Profissional'].map((tipo) {
+                  return DropdownMenuItem(value: tipo, child: Text(tipo));
+                }).toList(),
+                onChanged: (value) => setState(() => tipoContaSelecionado = value),
+                validator: (value) => value == null ? 'Selecione um tipo de conta' : null,
+              ),
+              const SizedBox(height: 16),
+              const Text("Data de nascimento"),
+              const SizedBox(height: 4),
+              GestureDetector(
+                onTap: _selecionarData,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        dataNascimento == null
+                            ? 'Nenhuma data selecionada'
+                            : DateFormat('dd/MM/yyyy').format(dataNascimento!),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    const Icon(Icons.calendar_today),
+                  ],
                 ),
               ),
+              const SizedBox(height: 24),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    try {
+                      final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                        email: emailController.text.trim(),
+                        password: senhaController.text.trim(),
+                      );
+
+                      final idade = DateTime.now().year - dataNascimento!.year;
+
+                      await FirebaseFirestore.instance
+                          .collection('usuarios')
+                          .doc(cred.user!.uid)
+                          .set({
+                        'uid': cred.user!.uid,
+                        'nome': nomeController.text.trim(),
+                        'email': emailController.text.trim(),
+                        'celular': celularController.text.trim(),
+                        'tipo': tipoContaSelecionado?.toLowerCase(),
+                        'dataNascimento': dataNascimento,
+                        'idade': idade,
+                      });
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Conta criada com sucesso!')),
+                        );
+                        await FirebaseAuth.instance.signOut(); // desloga o novo usuário
+                        Navigator.pushReplacementNamed(context, '/');
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Erro ao criar conta: $e')),
+                      );
+                    }
+                  }
+                },
+                child: const Text("Criar Conta"),
+              )
+
             ],
           ),
         ),

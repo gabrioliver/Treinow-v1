@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import 'check_perfil.dart';
+import 'recover_login_screen.dart';
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,162 +14,133 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController senhaController = TextEditingController();
-
-  bool lembrarLogin = false;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _senhaController = TextEditingController();
+  bool lembrarEmail = false;
   bool carregando = false;
 
   @override
   void initState() {
     super.initState();
-    _carregarEmailSalvo();
+    carregarEmailSalvo();
   }
 
-  Future<void> _carregarEmailSalvo() async {
+  Future<void> carregarEmailSalvo() async {
     final prefs = await SharedPreferences.getInstance();
-    final salvo = prefs.getString('email_salvo');
-    if (salvo != null) {
-      emailController.text = salvo;
-      lembrarLogin = true;
-      setState(() {});
+    final emailSalvo = prefs.getString('email_salvo');
+    if (emailSalvo != null) {
+      setState(() {
+        _emailController.text = emailSalvo;
+        lembrarEmail = true;
+      });
     }
   }
 
-  Future<void> _salvarEmail() async {
+  Future<void> salvarEmail(bool salvar) async {
     final prefs = await SharedPreferences.getInstance();
-    if (lembrarLogin) {
-      await prefs.setString('email_salvo', emailController.text.trim());
+    if (salvar) {
+      await prefs.setString('email_salvo', _emailController.text.trim());
     } else {
       await prefs.remove('email_salvo');
     }
   }
 
   Future<void> fazerLogin() async {
-    if (!_formKey.currentState!.validate()) return;
-
     setState(() => carregando = true);
-
     try {
-      await _salvarEmail();
-
-      final userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: senhaController.text.trim(),
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _senhaController.text.trim(),
       );
-
-      final uid = userCredential.user!.uid;
-      final doc = await FirebaseFirestore.instance.collection('usuarios').doc(uid).get();
-
-      if (!doc.exists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Usuário não encontrado.")),
+      await salvarEmail(lembrarEmail);
+      if (context.mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const CheckPerfilScreen()),
         );
-        return;
-      }
-
-      final tipo = doc.data()!['tipo'];
-      if (tipo == 'aluno') {
-        Navigator.pushReplacementNamed(context, '/painel_aluno');
-      } else {
-        Navigator.pushReplacementNamed(context, '/painel');
       }
     } on FirebaseAuthException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro: ${e.message}")),
-      );
+      final msg = e.code == 'user-not-found'
+          ? 'Usuário não encontrado'
+          : e.code == 'wrong-password'
+          ? 'Senha incorreta'
+          : 'Erro ao fazer login';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } finally {
       setState(() => carregando = false);
-    }
-  }
-
-  Future<void> loginComGoogle() async {
-    try {
-      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-      if (googleUser == null) return;
-
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      await FirebaseAuth.instance.signInWithCredential(credential);
-      Navigator.pushReplacementNamed(context, '/painel');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Erro no login com Google: $e")),
-      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextFormField(
-                controller: emailController,
-                keyboardType: TextInputType.emailAddress,
+              const Text(
+                "Bem-vindo ao TreiNow!",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+
+              TextField(
+                controller: _emailController,
                 decoration: const InputDecoration(labelText: 'E-mail'),
-                validator: (value) => (value == null || !value.contains('@')) ? "E-mail inválido" : null,
+                keyboardType: TextInputType.emailAddress,
+                onSubmitted: (_) => fazerLogin(),
               ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: senhaController,
-                obscureText: true,
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: _senhaController,
                 decoration: const InputDecoration(labelText: 'Senha'),
-                validator: (value) => (value == null || value.length < 6) ? "Senha inválida" : null,
-                onFieldSubmitted: (_) => fazerLogin(), // Pressionar Enter faz login
+                obscureText: true,
+                onSubmitted: (_) => fazerLogin(),
               ),
+              const SizedBox(height: 8),
+
               Row(
                 children: [
                   Checkbox(
-                    value: lembrarLogin,
-                    onChanged: (value) => setState(() => lembrarLogin = value ?? false),
+                    value: lembrarEmail,
+                    onChanged: (value) {
+                      setState(() => lembrarEmail = value ?? false);
+                    },
                   ),
-                  const Text("Lembrar meus dados"),
+                  const Text("Lembrar e-mail"),
                 ],
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: fazerLogin,
-                  child: carregando
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Text("Entrar"),
-                ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: loginComGoogle,
-                  child: const Text("Entrar com Google"),
-                ),
+
+              ElevatedButton(
+                onPressed: carregando ? null : fazerLogin,
+                child: carregando
+                    ? const CircularProgressIndicator()
+                    : const Text('Entrar'),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 8),
+
               TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/recover'),
-                child: const Text("Esqueceu seu login?"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RecoverLoginScreen()),
+                  );
+                },
+                child: const Text('Esqueceu seu login?'),
               ),
-              const SizedBox(height: 40),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text("Não tem login? "),
-                  TextButton(
-                    onPressed: () => Navigator.pushNamed(context, '/register'),
-                    child: const Text("Criar conta"),
-                  )
-                ],
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                  );
+                },
+                child: const Text('Criar conta'),
               ),
             ],
           ),
