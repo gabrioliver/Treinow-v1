@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "441212964869",
+    "project_id": "treinow-dfe44",
+    "storage_bucket": "treinow-dfe44.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441212964869:android:d77c3a592a92a0159ecc6c",
+        "android_client_info": {
+          "package_name": "com.fluxlab404.treinow"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "441212964869-vqp924ond08rmocbvngof9i22jcto483.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBws3_N1EuQ9M7EtHFvmnh8eRNWuSLAqw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441212964869-vqp924ond08rmocbvngof9i22jcto483.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
