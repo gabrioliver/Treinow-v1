@@ -18,7 +18,10 @@ import 'screens/agenda/agenda_calendar_screen.dart';
 import 'screens/agenda/add_event_screen.dart';
 import 'screens/dieta/dieta_screen.dart';
 import 'screens/aviso/aviso_screen.dart';
+<<<<<<< HEAD
 import 'screens/relatorios/relatorios_screen.dart';
+=======
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
 import 'screens/painel_aluno/painel_aluno_screen.dart';
 import 'screens/painel_aluno/buscar_profissional/buscar_profissional_screen.dart';
 import 'screens/painel_profissional/perfil_profissional_screen.dart';
@@ -119,7 +122,10 @@ class TreiNowApp extends StatelessWidget {
         '/aviso': (context) => const AvisosScreen(),
         '/painel_aluno': (context) => const PainelAlunoScreen(),
         '/buscar_profissional': (context) => const BuscarProfissionalScreen(),
+<<<<<<< HEAD
         '/relatorios': (context) => const RelatoriosScreen()
+=======
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/detalhes_aluno') {

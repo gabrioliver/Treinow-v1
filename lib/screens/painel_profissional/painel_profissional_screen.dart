@@ -119,6 +119,7 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
           )
         ],
       ),
+<<<<<<< HEAD
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -191,6 +192,67 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
             );
           },
         ),
+=======
+      body: FutureBuilder<DocumentSnapshot>(
+        future: FirebaseFirestore.instance.collection('perfis_profissionais').doc(uid).get(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (!snapshot.hasData || !snapshot.data!.exists) {
+            return const Center(child: Text("Perfil não encontrado."));
+          }
+
+          final dados = snapshot.data!.data() as Map<String, dynamic>;
+          final nomeProfissional = dados['nome'] ?? 'Profissional';
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  nomeProfissional,
+                  style: const TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF0077B6),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: [
+                    _dashboardCard("Meus alunos", Icons.group, route: '/alunos'),
+                    _dashboardCard("Financeiro", Icons.attach_money, route: '/financeiro'),
+                    _dashboardCard("Agenda", Icons.calendar_today, route: '/agenda'),
+                    _dashboardCard("Dietas", Icons.food_bank_rounded, route: '/dieta'),
+                    _dashboardCard("Treinos", Icons.fitness_center, onTap: () => _showSnack("Treinos em breve")),
+                    _dashboardCard("Avaliações Fisio", Icons.show_chart, onTap: () => _showSnack("Avaliações em breve")),
+                    _dashboardCard("Meus anúncios", Icons.campaign, onTap: () => Navigator.pushNamed(context, '/aviso')),
+                    _dashboardCard("Notificações", Icons.notifications, onTap: () => _showSnack("Notificações em breve")),
+                    _dashboardCard("Relatórios", Icons.bar_chart, onTap: () => _showSnack("Relatórios em breve")),
+                  ],
+                ),
+                const SizedBox(height: 30),
+                const Text("Notificações", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
+                ...notificacoes.map((noti) => Card(
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  child: ListTile(
+                    leading: const Icon(Icons.notifications, color: Colors.grey),
+                    title: Text(noti['mensagem'] ?? ""),
+                    subtitle: Text("Usuário: ${noti['usuario']} - Horário: ${noti['hora']}"),
+                  ),
+                )),
+              ],
+            ),
+          );
+        },
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       ),
     );
   }
@@ -201,7 +263,11 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
 
   Widget _dashboardCard(String title, IconData icon, {String? route, VoidCallback? onTap}) {
     return InkWell(
+<<<<<<< HEAD
       borderRadius: BorderRadius.circular(16),
+=======
+      borderRadius: BorderRadius.circular(20),
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       onTap: () {
         if (route != null) {
           Navigator.pushNamed(context, route);
@@ -209,6 +275,7 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
           onTap();
         }
       },
+<<<<<<< HEAD
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -217,10 +284,25 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
             BoxShadow(
               color: Colors.black.withOpacity(0.15),
               blurRadius: 10,
+=======
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        width: 110,
+        height: 110,
+        decoration: BoxDecoration(
+          color: const Color(0xFFE1F5FE),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 8,
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
               offset: const Offset(2, 2),
             ),
           ],
         ),
+<<<<<<< HEAD
         padding: const EdgeInsets.all(8),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -239,6 +321,18 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF0077B6),
               ),
+=======
+        padding: const EdgeInsets.all(10),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 34, color: const Color(0xFF0077B6)),
+            const SizedBox(height: 10),
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF0077B6)),
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
             ),
           ],
         ),

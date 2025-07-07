@@ -41,5 +41,8 @@ flutter:
     - assets/carboidratos.png
     - assets/agua.png
     - assets/lanche.png
+<<<<<<< HEAD
     - assets/logo_treinow.png
     - assets/google_icon.png
+=======
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e

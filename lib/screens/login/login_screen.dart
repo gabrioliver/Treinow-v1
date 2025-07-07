@@ -63,14 +63,20 @@ class _LoginScreenState extends State<LoginScreen> {
       final msg = e.code == 'user-not-found'
           ? 'Usuário não encontrado'
           : e.code == 'wrong-password'
+<<<<<<< HEAD
               ? 'Senha incorreta'
               : 'Erro ao fazer login';
+=======
+          ? 'Senha incorreta'
+          : 'Erro ao fazer login';
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } finally {
       setState(() => carregando = false);
     }
   }
 
+<<<<<<< HEAD
   void fazerLoginComGoogle() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Login com Google em breve...')),
@@ -219,6 +225,82 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ],
+=======
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Text(
+                "Bem-vindo ao TreiNow!",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+
+              TextField(
+                controller: _emailController,
+                decoration: const InputDecoration(labelText: 'E-mail'),
+                keyboardType: TextInputType.emailAddress,
+                onSubmitted: (_) => fazerLogin(),
+              ),
+              const SizedBox(height: 16),
+
+              TextField(
+                controller: _senhaController,
+                decoration: const InputDecoration(labelText: 'Senha'),
+                obscureText: true,
+                onSubmitted: (_) => fazerLogin(),
+              ),
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  Checkbox(
+                    value: lembrarEmail,
+                    onChanged: (value) {
+                      setState(() => lembrarEmail = value ?? false);
+                    },
+                  ),
+                  const Text("Lembrar e-mail"),
+                ],
+              ),
+              const SizedBox(height: 8),
+
+              ElevatedButton(
+                onPressed: carregando ? null : fazerLogin,
+                child: carregando
+                    ? const CircularProgressIndicator()
+                    : const Text('Entrar'),
+              ),
+              const SizedBox(height: 8),
+
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RecoverLoginScreen()),
+                  );
+                },
+                child: const Text('Esqueceu seu login?'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                  );
+                },
+                child: const Text('Criar conta'),
+              ),
+            ],
+          ),
+        ),
+>>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       ),
     );
   }
