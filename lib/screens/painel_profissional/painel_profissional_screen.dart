@@ -124,7 +124,7 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [Color.fromARGB(255, 2, 2, 2), Color.fromARGB(255, 0, 0, 0)],
+            colors: [Color.fromARGB(255, 92, 92, 92), Color.fromARGB(255, 171, 172, 173)],
           ),
         ),
         child: FutureBuilder<DocumentSnapshot>(
@@ -169,7 +169,7 @@ class _PainelProfissionalScreenState extends State<PainelProfissionalScreen> {
                       _dashboardCard("Treinos", Icons.fitness_center, onTap: () => _showSnack("Treinos em breve")),
                       _dashboardCard("Avaliações Fisio", Icons.show_chart, onTap: () => _showSnack("Avaliações em breve")),
                       _dashboardCard("Meus anúncios", Icons.campaign, onTap: () => Navigator.pushNamed(context, '/aviso')),
-                      _dashboardCard("Relatórios", Icons.bar_chart, onTap: () => _showSnack("Relatórios em breve")),
+                      _dashboardCard("Relatórios", Icons.bar_chart, route: '/relatorios'),
                     ],
                   ),
                   const SizedBox(height: 30),

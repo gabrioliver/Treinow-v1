@@ -71,119 +71,154 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void fazerLoginComGoogle() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Login com Google em breve...')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color.fromARGB(255, 2, 2, 2), Color.fromARGB(255, 247, 246, 246)],
-          ),
-        ),
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(
-                  'assets/logo_treinow.png',
-                  height: 100,
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  "TreiNow",
-                  style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 32),
-
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'E-mail',
-                    border: OutlineInputBorder(),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                  onSubmitted: (_) => fazerLogin(),
-                ),
-                const SizedBox(height: 16),
-
-                TextField(
-                  controller: _senhaController,
-                  decoration: const InputDecoration(
-                    labelText: 'Senha',
-                    border: OutlineInputBorder(),
-                  ),
-                  obscureText: true,
-                  onSubmitted: (_) => fazerLogin(),
-                ),
-                const SizedBox(height: 10),
-
-                Row(
-                  children: [
-                    Checkbox(
-                      value: lembrarEmail,
-                      onChanged: (value) {
-                        setState(() => lembrarEmail = value ?? false);
-                      },
-                    ),
-                    const Text("Lembrar e-mail"),
-                  ],
-                ),
-                const SizedBox(height: 8),
-
-                ElevatedButton(
-                  onPressed: carregando ? null : fazerLogin,
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    backgroundColor: const Color.fromARGB(255, 231, 232, 233),
-                  ),
-                  child: carregando
-                      ? const CircularProgressIndicator(color: Color.fromARGB(255, 10, 10, 10))
-                      : const Text("Entrar"),
-                ),
-
-                const SizedBox(height: 16),
-                OutlinedButton.icon(
-                  onPressed: () {
-                    // TODO: Implementar login com Google
-                  },
-                  icon: Image.asset(
-                    'assets/google_icon.png',
-                    height: 20,
-                  ),
-                  label: const Text("Entrar com Google"),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 50),
-                    foregroundColor: const Color.fromARGB(255, 8, 8, 8),
-                  ),
-                ),
-                const SizedBox(height: 16),
-
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const RecoverLoginScreen()),
-                    );
-                  },
-                  child: const Text('Esqueceu seu login?'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                    );
-                  },
-                  child: const Text('Criar conta'),
-                ),
-              ],
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/background_login_moderno.png'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
+          Container(
+            color: Colors.black.withOpacity(0.5),
+          ),
+          Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 80),
+                  Image.asset(
+                    'assets/logo_treinow.png',
+                    height: 80,
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    "TreiNow",
+                    style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
+                  ),
+                  const SizedBox(height: 32),
+                  TextField(
+                    controller: _emailController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.person, color: Color.fromARGB(179, 20, 51, 192)),
+                      labelText: 'E-mail',
+                      labelStyle: const TextStyle(color: Color.fromARGB(179, 11, 38, 192)),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.1),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    keyboardType: TextInputType.emailAddress,
+                    onSubmitted: (_) => fazerLogin(),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _senhaController,
+                    style: const TextStyle(color: Colors.white),
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.lock, color: Colors.white70),
+                      labelText: 'Senha',
+                      labelStyle: const TextStyle(color: Colors.white70),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.1),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    obscureText: true,
+                    onSubmitted: (_) => fazerLogin(),
+                  ),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Checkbox(
+                        value: lembrarEmail,
+                        onChanged: (value) {
+                          setState(() => lembrarEmail = value ?? false);
+                        },
+                      ),
+                      const Text("Lembrar e-mail", style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: carregando ? null : fazerLogin,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF5DE6DE),
+                      foregroundColor: Colors.black,
+                      elevation: 6,
+                      shadowColor: Colors.tealAccent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                    child: carregando
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text("ENTRAR", style: TextStyle(fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: fazerLoginComGoogle,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 6,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image.asset('assets/google_icon.png', height: 24),
+                          const SizedBox(width: 12),
+                          const Text(
+                            'Entrar com Google',
+                            style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RecoverLoginScreen()),
+                      );
+                    },
+                    child: const Text('Esqueceu seu login?', style: TextStyle(color: Colors.white)),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const RegisterScreen()),
+                      );
+                    },
+                    child: const Text('Criar conta', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
