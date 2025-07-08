@@ -63,20 +63,14 @@ class _LoginScreenState extends State<LoginScreen> {
       final msg = e.code == 'user-not-found'
           ? 'Usuário não encontrado'
           : e.code == 'wrong-password'
-<<<<<<< HEAD
               ? 'Senha incorreta'
               : 'Erro ao fazer login';
-=======
-          ? 'Senha incorreta'
-          : 'Erro ao fazer login';
->>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } finally {
       setState(() => carregando = false);
     }
   }
 
-<<<<<<< HEAD
   void fazerLoginComGoogle() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Login com Google em breve...')),
@@ -88,12 +82,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/background_login_moderno.png'),
-                fit: BoxFit.cover,
-              ),
+          Positioned.fill(
+            child: Image.asset(
+              'assets/fundo.png',
+              fit: BoxFit.cover,
             ),
           ),
           Container(
@@ -118,13 +110,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 32),
                   TextField(
                     controller: _emailController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Color.fromARGB(255, 12, 12, 12)),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.person, color: Color.fromARGB(179, 20, 51, 192)),
+                      prefixIcon: const Icon(Icons.person, color: Color.fromARGB(179, 7, 7, 7)),
                       labelText: 'E-mail',
-                      labelStyle: const TextStyle(color: Color.fromARGB(179, 11, 38, 192)),
+                      labelStyle: const TextStyle(color: Color.fromARGB(179, 7, 7, 7)),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: const Color.fromARGB(255, 7, 7, 7).withOpacity(0.1),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
                     keyboardType: TextInputType.emailAddress,
@@ -133,16 +125,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 16),
                   TextField(
                     controller: _senhaController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Color.fromARGB(255, 5, 5, 5)),
                     decoration: InputDecoration(
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white70),
+                      prefixIcon: const Icon(Icons.lock, color: Color.fromARGB(179, 5, 5, 5)),
                       labelText: 'Senha',
-                      labelStyle: const TextStyle(color: Colors.white70),
+                      labelStyle: const TextStyle(color: Color.fromARGB(179, 10, 10, 10)),
                       filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
+                      fillColor: const Color.fromARGB(255, 7, 7, 7).withOpacity(0.1),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                     ),
-                    obscureText: true,
+                    obscureText: false,
                     onSubmitted: (_) => fazerLogin(),
                   ),
                   const SizedBox(height: 12),
@@ -154,7 +146,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() => lembrarEmail = value ?? false);
                         },
                       ),
-                      const Text("Lembrar e-mail", style: TextStyle(color: Colors.white)),
+                      const Text("Lembrar e-mail", style: TextStyle(color: Color.fromARGB(255, 8, 8, 8))),
                     ],
                   ),
                   const SizedBox(height: 16),
@@ -209,7 +201,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (_) => const RecoverLoginScreen()),
                       );
                     },
-                    child: const Text('Esqueceu seu login?', style: TextStyle(color: Colors.white)),
+                    child: const Text('Esqueceu seu login?', style: TextStyle(color: Color.fromARGB(255, 10, 10, 10))),
                   ),
                   TextButton(
                     onPressed: () {
@@ -218,89 +210,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         MaterialPageRoute(builder: (_) => const RegisterScreen()),
                       );
                     },
-                    child: const Text('Criar conta', style: TextStyle(color: Colors.white)),
+                    child: const Text('Criar conta', style: TextStyle(color: Color.fromARGB(255, 10, 10, 10))),
                   ),
                 ],
               ),
             ),
           ),
         ],
-=======
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const Text(
-                "Bem-vindo ao TreiNow!",
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-
-              TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: 'E-mail'),
-                keyboardType: TextInputType.emailAddress,
-                onSubmitted: (_) => fazerLogin(),
-              ),
-              const SizedBox(height: 16),
-
-              TextField(
-                controller: _senhaController,
-                decoration: const InputDecoration(labelText: 'Senha'),
-                obscureText: true,
-                onSubmitted: (_) => fazerLogin(),
-              ),
-              const SizedBox(height: 8),
-
-              Row(
-                children: [
-                  Checkbox(
-                    value: lembrarEmail,
-                    onChanged: (value) {
-                      setState(() => lembrarEmail = value ?? false);
-                    },
-                  ),
-                  const Text("Lembrar e-mail"),
-                ],
-              ),
-              const SizedBox(height: 8),
-
-              ElevatedButton(
-                onPressed: carregando ? null : fazerLogin,
-                child: carregando
-                    ? const CircularProgressIndicator()
-                    : const Text('Entrar'),
-              ),
-              const SizedBox(height: 8),
-
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RecoverLoginScreen()),
-                  );
-                },
-                child: const Text('Esqueceu seu login?'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                  );
-                },
-                child: const Text('Criar conta'),
-              ),
-            ],
-          ),
-        ),
->>>>>>> 34ceb76d0a34228caed8a480bcaaebddf456137e
       ),
     );
   }

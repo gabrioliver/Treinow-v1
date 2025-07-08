@@ -44,7 +44,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return idade;
   }
 
-  Future<void> _registrar() async {
+  Future<void> registrar() async {
     if (!_formKey.currentState!.validate() || dataNascimento == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Preencha todos os campos.")));
       return;
